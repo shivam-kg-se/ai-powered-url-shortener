@@ -1,7 +1,9 @@
 package com.uss.controller;
 
+import com.uss.bindings.LoginRequest;
 import com.uss.bindings.RegisterRequest;
 import com.uss.models.User;
+import com.uss.service.JwtAuthenticationResponse;
 import com.uss.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,5 +29,10 @@ public class AuthController {
         user.setRole("ROLE_USER");
         userService.registerUser(user);
         return ResponseEntity.ok("User registered successfully");
+    }
+    @PostMapping("/public/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginRequest loginRequest){
+        JwtAuthenticationResponse response = userService.loginUser(loginRequest);
+        return ResponseEntity.ok(response);
     }
 }
