@@ -31,8 +31,15 @@ public class SmtpOtpEmailService implements OtpEmailService {
         message.setTo(email);
         message.setSubject("Your URL Shortener verification code");
         message.setText(
-                "Your verification code for " + purpose + " is " + otp
-                        + ". It expires in 10 minutes."
+                "Hello from Linkora-AI!\n\n"
+                        + "Your verification code for " + purpose + " is: " + otp + ".\n\n"
+                        + "This code is valid for 10 minutes only. For your security, "
+                        + "please do not share this code with anyone.\n\n"
+                        + "If you did not request this verification code, please ignore "
+                        + "this message.\n\n"
+                        + "Best regards,\n"
+                        + "Shivam Kumar Gupta\n"
+                        + "Founder, Linkora-AI"
         );
 
         try {
