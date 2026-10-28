@@ -81,6 +81,16 @@ public class UrlMappingService {
     }
 
     public UrlMapping getOriginalUrl(String shortUrl) {
-        return urlMappingRepo.findByShortUrl(shortUrl);
+        UrlMapping urlMapping = urlMappingRepo.findByShortUrl(shortUrl);
+        if(urlMapping != null){
+            urlMapping.setOriginalUrl(urlMapping.getOriginalUrl()+1);
+            urlMappingRepo.save(urlMapping);
+            ClickEvent clickEvent = new ClickEvent();
+            clickEvent.setClickDate(LocalDateTime.now());
+            clickEvent.setUrlMapping(urlMapping);
+            clickEventRepo.save(clickEvent);
+
+        }
+            return urlMapping;
     }
 }
