@@ -39,6 +39,7 @@ public class JwtUtils {
                 .collect(Collectors.joining(","));
         return Jwts.builder()
                 .subject(username)
+                .claim("userId", userDetails.getId())
                 .claim("roles", roles)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpirationMs)) // 10 hours
@@ -55,6 +56,14 @@ public class JwtUtils {
                 .verifyWith((SecretKey) key())
                 .build().parseSignedClaims(token)
                 .getPayload().getSubject();
+    }
+
+    public Long getUserIdFromJwtToken(String token) {
+        Object userId = Jwts.parser()
+                .verifyWith((SecretKey) key())
+                .build().parseSignedClaims(token)
+                .getPayload().get("userId");
+        return userId instanceof Number number ? number.longValue() : null;
     }
 
     public boolean validateToken(String authToken) {

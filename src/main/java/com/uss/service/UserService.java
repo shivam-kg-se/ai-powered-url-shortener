@@ -5,13 +5,11 @@ import com.uss.models.User;
 import com.uss.repository.UserRepo;
 import com.uss.security.jwt.JwtUtils;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,14 +17,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     private UserRepo userRepository;
-    private PasswordEncoder passwordEncoder;
     private JwtUtils jwtUtils;
     private AuthenticationManager authenticationManager;
 
-    public User registerUser(User user){
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
-    }
 //    loginUser-> authenticateUser
     public JwtAuthenticationResponse loginUser(LoginRequest loginRequest){
         Authentication authentication = authenticationManager.authenticate(
