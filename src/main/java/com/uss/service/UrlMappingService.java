@@ -58,20 +58,40 @@ public class UrlMappingService {
         return urlMappings.stream().map(this::convertToDTO).toList();
     }
 
-    public List<ClickEventDTO> getClickEventByDate(String shortUrl, LocalDateTime startDate, LocalDateTime endDate) {
+
+    public List<ClickEventDTO> getClickEventByDate(
+            String shortUrl,
+            LocalDateTime startDate,
+            LocalDateTime endDate) {
+
         UrlMapping urlMapping = urlMappingRepo.findByShortUrl(shortUrl);
+
+        // URL database mein nahi mila
         if (urlMapping == null) {
-            return clickEventRepo.findByUrlMappingAndClickDateBetween(urlMapping, startDate, endDate).
-                    stream().collect(Collectors.groupingBy(click->click.getClickDate().toLocalDate(), Collectors.counting()))
-                    .entrySet().stream().map(entry->{
-                        ClickEventDTO dto = new ClickEventDTO();
-                       dto.setClickDate(entry.getKey());
-                       dto.setCount(entry.getValue());
-                        return dto;
-                    }).toList();
+            return List.of();
         }
-        return null;
+
+        List<ClickEvent> clickEvents = clickEventRepo.findByUrlMappingAndClickDateBetween(
+                        urlMapping,
+                        startDate,
+                        endDate
+                );
+        return clickEvents.stream()
+                .collect(Collectors.groupingBy(
+                        click -> click.getClickDate().toLocalDate(),
+                        Collectors.counting()
+                ))
+                .entrySet()
+                .stream()
+                .map(entry -> {
+                    ClickEventDTO dto = new ClickEventDTO();
+                    dto.setClickDate(entry.getKey());
+                    dto.setCount(entry.getValue());
+                    return dto;
+                })
+                .toList();
     }
+
 
     public Map<LocalDate, Long>  getTotalClicksByUserAndDate(User user, LocalDate startDate, LocalDate endDate) {
         List<UrlMapping> urlMappings = urlMappingRepo.findByUser(user);
@@ -83,13 +103,12 @@ public class UrlMappingService {
     public UrlMapping getOriginalUrl(String shortUrl) {
         UrlMapping urlMapping = urlMappingRepo.findByShortUrl(shortUrl);
         if(urlMapping != null){
-            urlMapping.setOriginalUrl(urlMapping.getOriginalUrl()+1);
+            urlMapping.setClickCount(urlMapping.getClickCount()+1);
             urlMappingRepo.save(urlMapping);
             ClickEvent clickEvent = new ClickEvent();
             clickEvent.setClickDate(LocalDateTime.now());
             clickEvent.setUrlMapping(urlMapping);
             clickEventRepo.save(clickEvent);
-
         }
             return urlMapping;
     }
